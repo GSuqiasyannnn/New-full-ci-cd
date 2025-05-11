@@ -10,9 +10,5 @@ terraform {
 
 provider "aws" {
     region = "us-east-1"
-    #profile = 'production'
-    #access_key = "accesskey"
-    #secret_key = "secret_key"
-    #shared_credentials_file = ["home/username/aws/credentials"]
- 
+    shared_credentials_file = "/home/gor-33/.aws/credentials"
 }
