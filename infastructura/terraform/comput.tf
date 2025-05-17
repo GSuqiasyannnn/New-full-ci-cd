@@ -9,12 +9,13 @@ data "aws_ami" "server_ami" {
 }
 
 resource "aws_instance" "CI-CD_instance" {
-  count                  = 1
+  count                  = 2
   instance_type          = "t2.micro"
   ami                    = data.aws_ami.server_ami.id
   key_name               = "Key_For_CI-CD-proj"
   subnet_id              = aws_subnet.CI-CD_pub_sub[0].id
   vpc_security_group_ids = [aws_security_group.CI-CD_sg.id]
+
 
   user_data = <<-EOF
               #!/bin/bash
@@ -51,9 +52,10 @@ resource "aws_instance" "CI-CD_instance" {
     command = "aws ec2 wait instance-status-ok --instance-ids ${self.id} --region us-east-1"
   }
 }
+
   
 output "grafana-access" {
-  value = { for i in aws_instance.CI-CD_instance : i.tags.Name => "${i.public_ip}:3000" }
+  value = { for i in aws_instance.CI-CD_instance : i.tags.Name => ["${i.public_ip}:3000"]... }
 }
 
 output "instance_ips" {
