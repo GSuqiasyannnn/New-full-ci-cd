@@ -1,6 +1,6 @@
 # ALB
 resource "aws_lb" "test" {
-  name               = "test-lb-tf"
+  name               = "CI-CD-lb-tf"
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.CI-CD_sg.id]
@@ -10,8 +10,8 @@ resource "aws_lb" "test" {
 }
 
 # Target Group
-resource "aws_lb_target_group" "app_tg" {
-  name     = "app-tg"
+resource "aws_lb_target_group" "CI-CD-tg" {
+  name     = "CI-CD-tg"
   port     = 80
   protocol = "HTTP"
   vpc_id   = aws_vpc.CI-CD-vpc.id
@@ -42,7 +42,7 @@ resource "aws_lb_listener" "app_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.app_tg.arn
+    target_group_arn = aws_lb_target_group.CI-CD-tg.arn
   }
 }
 
