@@ -29,7 +29,7 @@ resource "aws_lb_target_group" "CI-CD-tg" {
 # Attach EC2 instances to target group
 resource "aws_lb_target_group_attachment" "app_attachment" {
   count            = length(aws_instance.CI-CD_instance)
-  target_group_arn = aws_lb_target_group.app_tg.arn
+  target_group_arn = aws_lb_target_group.CI-CD-tg.arn
   target_id        = aws_instance.CI-CD_instance[count.index].id
   port             = 80
 }
