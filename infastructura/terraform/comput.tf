@@ -40,7 +40,7 @@ resource "aws_instance" "CI-CD_instance" {
   }
 
   provisioner "local-exec" {
-    command = "echo '[main]\n${self.public_ip}' > aws_hosts"
+    command = "echo '[main]\n${self.public_ip}' > /tmp/aws_hosts"
   }
 
   provisioner "local-exec" {
