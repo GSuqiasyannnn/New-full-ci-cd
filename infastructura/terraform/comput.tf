@@ -8,6 +8,13 @@ data "aws_ami" "server_ami" {
   }
 }
 
+# Create the header once before instances start
+resource "null_resource" "init_hosts_file" {
+  provisioner "local-exec" {
+    command = "echo '[main]' > aws_hosts"
+  }
+}
+
 resource "aws_instance" "CI-CD_instance" {
   count                  = 2
   instance_type          = "t2.micro"
@@ -15,7 +22,6 @@ resource "aws_instance" "CI-CD_instance" {
   key_name               = "Key_For_CI-CD-proj"
   subnet_id              = aws_subnet.CI-CD_pub_sub[0].id
   vpc_security_group_ids = [aws_security_group.CI-CD_sg.id]
-
 
   user_data = <<-EOF
               #!/bin/bash
@@ -39,21 +45,23 @@ resource "aws_instance" "CI-CD_instance" {
     volume_size = var.main_vol_size
   }
 
+  # Make sure header is created before appending IPs
+  depends_on = [null_resource.init_hosts_file]
+
   provisioner "local-exec" {
-    command = "echo '[main]\n${self.public_ip}' > aws_hosts"
+    command = "echo '${self.public_ip}' >> aws_hosts"
   }
 
   provisioner "local-exec" {
     when    = destroy
     command = "sed -i '/^[0-9]/d' aws_hosts"
   }
-  
-  provisioner "local-exec" { 
+
+  provisioner "local-exec" {
     command = "aws ec2 wait instance-status-ok --instance-ids ${self.id} --region us-east-1"
   }
 }
 
-  
 output "grafana-access" {
   value = { for i in aws_instance.CI-CD_instance : i.tags.Name => ["${i.public_ip}:3000"]... }
 }
@@ -61,3 +69,4 @@ output "grafana-access" {
 output "instance_ips" {
   value = [ for i in aws_instance.CI-CD_instance : i.public_ip ]
 }
+
