@@ -28,8 +28,10 @@ variable main_vol_size {
 
 variable aws_access_key {
     type    = string
+    default = ${{ secrets.AWS_ACCESS_KEY }}
 }
 
 variable aws_secret_key {
-    type    = string 
+    type    = string
+    default = ${{ secrets. AWS_SECRET_KEY }}
 }
