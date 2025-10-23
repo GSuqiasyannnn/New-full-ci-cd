@@ -4,9 +4,16 @@ data "aws_ami" "server_ami" {
 
   filter {
     name   = "name"
-    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-20250305"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
+
+
 
 # Create the header once before instances start
 resource "null_resource" "init_hosts_file" {
